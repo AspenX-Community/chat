@@ -1,0 +1,105 @@
+<html>
+	<head>
+		<title>Chat AspenX</title>
+		<meta charset="utf-8">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<!--<script src="https://cdn.socket.io/socket.io-1.3.7.js"></script>-->
+		<script src="https://cdn.socket.io/4.2.0/socket.io.min.js"></script>
+		
+		
+
+		<script type="text/javascript">
+
+			$(document).ready(function(){
+
+				//conectar ao socket
+				var socket = io();
+
+				//Função para escutar uma msg nova no chat
+				socket.on('updatechat', function (username, data) {
+					$('#mensagens').append('<b>'+username + ' diz:</b> ' + data + '<br>');
+				});
+
+			  // Escutar quando entrar alguem no chat
+				socket.on('updateusers', function(data) {
+					$('#usuarios').empty();
+					$.each(data, function(key, value) {
+						$('#usuarios').append('<div>' + value.nome + '</div>');
+					});
+				});
+
+
+				$("#btn_entrar").click(function(event){
+						event.preventDefault();
+
+						var userName = $("#user_name").val();
+
+						//adicionar nome de usuario
+						socket.emit('adduser', userName);
+
+						$("#div_login").hide();
+						$("#div_chat").show();
+
+				});
+
+				$("#btn_enviar").click(function(event){
+						event.preventDefault();
+
+						var conteudo = $("#mensagem").val();
+
+						socket.emit('sendchat', conteudo);
+
+				});
+
+
+			});
+
+
+
+		</script>
+	</head>
+	<body>
+		<h1>Chat</h1>
+
+
+		<div class="" id="div_chat"  style="display:none;">
+			<input type="text" id="mensagem"/>
+
+			<br>
+
+			<input type="button" id="btn_enviar" value="Enviar"/>
+
+			<br>
+			<br>
+			Usuários conectados:
+			<ul id="usuarios">
+			</ul>
+
+			Mensagens na sala:
+			<ul id="mensagens">
+			</ul>
+		</div>
+
+
+		<div class="" id="div_login">
+
+			<div class="">
+	      Olá, bem vindo ao chat
+	    </div>
+
+	  <div class="">
+	    Qual seu nome ?
+	  </div>
+
+	  <div class="">
+	    <input type="text" id="user_name" value="">
+	  </div>
+
+	    <div class="">
+	      <input type="button" id="btn_entrar" value="Entrar">
+	    </div>
+		</div>
+
+
+	</body>
+</html>
